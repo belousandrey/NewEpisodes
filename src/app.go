@@ -9,6 +9,7 @@ import (
 
 	"github.com/belousandrey/NewEpisodes/src/engines/changelog"
 	"github.com/belousandrey/NewEpisodes/src/engines/golangshow"
+	"github.com/belousandrey/NewEpisodes/src/engines/rucast"
 	"github.com/belousandrey/NewEpisodes/src/types"
 )
 
@@ -96,6 +97,17 @@ func processPodcast(podcast types.Podcast) (listEpisodes []*types.Episode, newLa
 		}
 	case "changelog":
 		engine := changelog.NewEngine(podcast.Last)
+		res, last, err := engine.GetNewEpisodes(resp)
+		if err != nil {
+			return listEpisodes, newLastEpisode, err
+		}
+		listEpisodes = append(listEpisodes, res...)
+
+		if last != "" {
+			newLastEpisode = last
+		}
+	case "rucast":
+		engine := rucast.NewEngine(podcast.Last)
 		res, last, err := engine.GetNewEpisodes(resp)
 		if err != nil {
 			return listEpisodes, newLastEpisode, err
