@@ -1,0 +1,6 @@
+email: someguy@gmail.com
+podcasts:
+- last: 2018-01-26
+  link: http://golangshow.com/index.xml
+  title: Русскоязычный подкаст о языке Go
+  engine: golangshow
