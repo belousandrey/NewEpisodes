@@ -2,16 +2,9 @@ package golangshow
 
 import (
 	"net/http"
-	"time"
 
-	"github.com/mmcdole/gofeed"
-
-	"github.com/belousandrey/NewEpisodes/src/const"
+	"github.com/belousandrey/NewEpisodes/src/engines/defaultengine"
 	"github.com/belousandrey/NewEpisodes/src/types"
-)
-
-const (
-	GolangShowDateFormat = "Mon, 02 Jan 2006 00:00:00 +0000"
 )
 
 type Engine struct {
@@ -25,35 +18,7 @@ func NewEngine(last string) *Engine {
 }
 
 func (e *Engine) GetNewEpisodes(resp *http.Response) (episodes []*types.Episode, last string, err error) {
-	tle, err := time.Parse(constants.DateFormat, e.lastEpisode)
-	if err != nil {
-		return
-	}
-
-	fp := gofeed.NewParser()
-	feed, err := fp.Parse(resp.Body)
-	if err != nil {
-		return
-	}
-
-	for _, e := range feed.Items {
-		t, err2 := time.Parse(GolangShowDateFormat, e.Published)
-		if err2 != nil {
-			return episodes, last, err2
-		}
-
-		if t.Before(tle) {
-			break
-		}
-
-		if last == "" {
-			last = t.Add(time.Hour * 24).Format(constants.DateFormat)
-		}
-
-		episodes = append([]*types.Episode{types.NewEpisode(e.Title, e.Link, t.Format(constants.DateFormat))}, episodes...)
-	}
-
-	return
+	return defaultengine.GetNewEpisodes(resp, e.lastEpisode)
 }
 
 /*func (e *Engine) GetNewEpisodes_(resp *http.Response) (episodes []*types.Episode, last string, err error) {
