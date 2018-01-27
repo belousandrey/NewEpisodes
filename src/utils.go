@@ -11,7 +11,7 @@ import (
 )
 
 var emailTemplate = `
-New episodes in these podcasts:
+New episodes in these podcasts:<br/><br/>
 
 {{range .}}{{.Podcast.Title}}{{range .Episodes}}<ul>
 <li><a href="{{.Link}}">{{.Title}}</a> at {{.Date}}</li></ul>{{end}}
