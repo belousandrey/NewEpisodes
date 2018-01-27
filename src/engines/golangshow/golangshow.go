@@ -6,8 +6,8 @@ import (
 
 	"github.com/mmcdole/gofeed"
 
-	"github.com/belous/NewEpisodes/src/const"
-	"github.com/belous/NewEpisodes/src/types"
+	"github.com/belousandrey/NewEpisodes/src/const"
+	"github.com/belousandrey/NewEpisodes/src/types"
 )
 
 const (

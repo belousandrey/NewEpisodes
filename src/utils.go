@@ -6,7 +6,7 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/belous/NewEpisodes/src/types"
+	"github.com/belousandrey/NewEpisodes/src/types"
 	"github.com/go-gomail/gomail"
 )
 

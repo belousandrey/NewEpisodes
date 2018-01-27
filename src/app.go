@@ -7,8 +7,8 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/belous/NewEpisodes/src/engines/golangshow"
-	"github.com/belous/NewEpisodes/src/types"
+	"github.com/belousandrey/NewEpisodes/src/engines/golangshow"
+	"github.com/belousandrey/NewEpisodes/src/types"
 )
 
 const (
