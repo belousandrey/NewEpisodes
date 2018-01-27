@@ -84,51 +84,27 @@ func processPodcast(podcast types.Podcast) (listEpisodes []*types.Episode, newLa
 	}
 	defer resp.Body.Close()
 
+	var (
+		res  []*types.Episode
+		last string
+	)
 	switch podcast.Engine {
 	case "golangshow":
-		engine := golangshow.NewEngine(podcast.Last)
-		res, last, err := engine.GetNewEpisodes(resp)
-		if err != nil {
-			return listEpisodes, newLastEpisode, err
-		}
-		listEpisodes = append(listEpisodes, res...)
-
-		if last != "" {
-			newLastEpisode = last
-		}
+		res, last, err = golangshow.NewEngine(podcast.Last).GetNewEpisodes(resp)
 	case "changelog":
-		engine := changelog.NewEngine(podcast.Last)
-		res, last, err := engine.GetNewEpisodes(resp)
-		if err != nil {
-			return listEpisodes, newLastEpisode, err
-		}
-		listEpisodes = append(listEpisodes, res...)
-
-		if last != "" {
-			newLastEpisode = last
-		}
+		res, last, err = changelog.NewEngine(podcast.Last).GetNewEpisodes(resp)
 	case "rucast":
-		engine := rucast.NewEngine(podcast.Last)
-		res, last, err := engine.GetNewEpisodes(resp)
-		if err != nil {
-			return listEpisodes, newLastEpisode, err
-		}
-		listEpisodes = append(listEpisodes, res...)
-
-		if last != "" {
-			newLastEpisode = last
-		}
+		res, last, err = rucast.NewEngine(podcast.Last).GetNewEpisodes(resp)
 	case "podfm":
-		engine := podfm.NewEngine(podcast.Last)
-		res, last, err := engine.GetNewEpisodes(resp)
-		if err != nil {
-			return listEpisodes, newLastEpisode, err
-		}
-		listEpisodes = append(listEpisodes, res...)
+		res, last, err = podfm.NewEngine(podcast.Last).GetNewEpisodes(resp)
+	}
+	if err != nil {
+		return listEpisodes, newLastEpisode, err
+	}
+	listEpisodes = append(listEpisodes, res...)
 
-		if last != "" {
-			newLastEpisode = last
-		}
+	if last != "" {
+		newLastEpisode = last
 	}
 
 	return
