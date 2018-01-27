@@ -16,3 +16,11 @@ podcasts:
   link: http://spiridonov.ru/runetologia/rss_new/
   engine: podfm
   last: 2017-11-18
+- title: CappuccinoCatenaccio
+  link: https://podster.fm/rss.xml?pid=45624
+  engine: podster
+  last: 2017-11-18
+- title: Мир фантастики
+  link: https://podster.fm/rss.xml?pid=50280
+  engine: podster
+  last: 2017-11-18
