@@ -24,3 +24,7 @@ podcasts:
   link: https://podster.fm/rss.xml?pid=50280
   engine: podster
   last: 2017-11-18
+- title: Matchday
+  link: https://matchday.biz/podcasts/
+  engine: matchdaybiz
+  last: 2017-11-18

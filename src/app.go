@@ -9,6 +9,7 @@ import (
 
 	"github.com/belousandrey/NewEpisodes/src/engines/changelog"
 	"github.com/belousandrey/NewEpisodes/src/engines/golangshow"
+	"github.com/belousandrey/NewEpisodes/src/engines/matchdaybiz"
 	"github.com/belousandrey/NewEpisodes/src/engines/podfm"
 	"github.com/belousandrey/NewEpisodes/src/engines/podster"
 	"github.com/belousandrey/NewEpisodes/src/engines/rucast"
@@ -100,6 +101,8 @@ func processPodcast(podcast types.Podcast) (listEpisodes []*types.Episode, newLa
 		res, last, err = podfm.NewEngine(podcast.Last).GetNewEpisodes(resp)
 	case "podster":
 		res, last, err = podster.NewEngine(podcast.Last).GetNewEpisodes(resp)
+	case "matchdaybiz":
+		res, last, err = matchdaybiz.NewEngine(podcast.Last).GetNewEpisodes(resp)
 	}
 	if err != nil {
 		return listEpisodes, newLastEpisode, err
