@@ -1,4 +1,10 @@
-email: someguy@gmail.com
+email:
+  to: someguy@gmail.com
+  from:
+    host: smtp.gmail.com
+    port: 587
+    username: someguy
+    password: password
 podcasts:
 - last: 2017-10-26
   link: http://golangshow.com/index.xml

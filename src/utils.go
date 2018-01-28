@@ -2,9 +2,10 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"html/template"
 	"net/http"
+
+	"strconv"
 
 	"github.com/belousandrey/NewEpisodes/src/types"
 	"github.com/go-gomail/gomail"
@@ -12,7 +13,7 @@ import (
 
 var emailTemplateFile = "../templates/email.html"
 
-func sendEmail(address string, data []*types.PodcastWithEpisodes) error {
+func sendEmail(recepient string, sender map[string]string, data []*types.PodcastWithEpisodes) error {
 	t, err := template.ParseFiles(emailTemplateFile)
 	if err != nil {
 		return err
@@ -23,14 +24,15 @@ func sendEmail(address string, data []*types.PodcastWithEpisodes) error {
 		return err
 	}
 
-	fmt.Printf("send this to address %s\n", address)
-	fmt.Println(html.String())
-
-	d := gomail.NewDialer("smtp.gmail.com", 587, "someguy", "password")
+	port, err := strconv.Atoi(sender["port"])
+	if err != nil {
+		return err
+	}
+	d := gomail.NewDialer(sender["host"], port, sender["username"], sender["password"])
 
 	m := gomail.NewMessage()
-	m.SetHeader("From", address)
-	m.SetHeader("To", address)
+	m.SetHeader("From", recepient)
+	m.SetHeader("To", recepient)
 	m.SetHeader("Subject", "New podcast episodes")
 	m.SetBody("text/html", html.String())
 

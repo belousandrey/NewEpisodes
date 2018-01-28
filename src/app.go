@@ -54,7 +54,7 @@ func main() {
 			panic(fmt.Errorf("config write: %s", err))
 		}
 
-		err = sendEmail(viper.GetString("email"), emailContent)
+		err = sendEmail(viper.GetString("email.to"), viper.GetStringMapString("email.from"), emailContent)
 		if err != nil {
 			panic(err)
 		}
