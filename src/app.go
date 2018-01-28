@@ -50,13 +50,14 @@ func main() {
 	if len(podcasts) > 0 {
 		viper.Set("podcasts", podcasts)
 
-		if err := viper.WriteConfig(); err != nil {
-			panic(fmt.Errorf("config write: %s", err))
-		}
-
 		err = sendEmail(viper.GetString("email.to"), viper.GetStringMapString("email.from"), emailContent)
 		if err != nil {
 			panic(err)
+		}
+
+		// update config file with dates of last episodes
+		if err := viper.WriteConfig(); err != nil {
+			panic(fmt.Errorf("config write: %s", err))
 		}
 	}
 }
