@@ -7,12 +7,8 @@ import (
 
 	"github.com/spf13/viper"
 
-	"github.com/belousandrey/NewEpisodes/src/engines/changelog"
-	"github.com/belousandrey/NewEpisodes/src/engines/golangshow"
+	"github.com/belousandrey/NewEpisodes/src/engines/defaultengine"
 	"github.com/belousandrey/NewEpisodes/src/engines/matchdaybiz"
-	"github.com/belousandrey/NewEpisodes/src/engines/podfm"
-	"github.com/belousandrey/NewEpisodes/src/engines/podster"
-	"github.com/belousandrey/NewEpisodes/src/engines/rucast"
 	"github.com/belousandrey/NewEpisodes/src/types"
 )
 
@@ -91,16 +87,8 @@ func processPodcast(podcast types.Podcast) (listEpisodes []*types.Episode, newLa
 		last string
 	)
 	switch podcast.Engine {
-	case "golangshow":
-		res, last, err = golangshow.NewEngine(podcast.Last).GetNewEpisodes(resp)
-	case "changelog":
-		res, last, err = changelog.NewEngine(podcast.Last).GetNewEpisodes(resp)
-	case "rucast":
-		res, last, err = rucast.NewEngine(podcast.Last).GetNewEpisodes(resp)
-	case "podfm":
-		res, last, err = podfm.NewEngine(podcast.Last).GetNewEpisodes(resp)
-	case "podster":
-		res, last, err = podster.NewEngine(podcast.Last).GetNewEpisodes(resp)
+	case "golangshow", "changelog", "rucast", "podfm", "podster":
+		res, last, err = defaultengine.NewEngine(podcast.Last).GetNewEpisodes(resp)
 	case "matchdaybiz":
 		res, last, err = matchdaybiz.NewEngine(podcast.Last).GetNewEpisodes(resp)
 	}

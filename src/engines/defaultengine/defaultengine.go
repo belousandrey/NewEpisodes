@@ -10,8 +10,18 @@ import (
 	"github.com/mmcdole/gofeed"
 )
 
-func GetNewEpisodes(resp *http.Response, lastEpisode string) (episodes []*types.Episode, last string, err error) {
-	tle, err := time.Parse(constants.DateFormat, lastEpisode)
+type Engine struct {
+	lastEpisode string
+}
+
+func NewEngine(last string) *Engine {
+	return &Engine{
+		lastEpisode: last,
+	}
+}
+
+func (e *Engine) GetNewEpisodes(resp *http.Response) (episodes []*types.Episode, last string, err error) {
+	tle, err := time.Parse(constants.DateFormat, e.lastEpisode)
 	if err != nil {
 		return
 	}
