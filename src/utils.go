@@ -10,17 +10,10 @@ import (
 	"github.com/go-gomail/gomail"
 )
 
-var emailTemplate = `
-New episodes in these podcasts:<br/><br/>
-
-{{range .}}{{.Podcast.Title}}{{range .Episodes}}<ul>
-<li><a href="{{.Link}}">{{.Title}}</a> at {{.Date}}</li></ul>{{end}}
-{{end}}
-`
+var emailTemplateFile = "../templates/email.html"
 
 func sendEmail(address string, data []*types.PodcastWithEpisodes) error {
-	t := template.New("main")
-	t, err := t.Parse(emailTemplate)
+	t, err := template.ParseFiles(emailTemplateFile)
 	if err != nil {
 		return err
 	}
