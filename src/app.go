@@ -5,15 +5,12 @@ import (
 	"path"
 	"runtime"
 
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 
 	"github.com/belousandrey/NewEpisodes/src/engines/defaultengine"
 	"github.com/belousandrey/NewEpisodes/src/engines/matchdaybiz"
 	"github.com/belousandrey/NewEpisodes/src/types"
-)
-
-const (
-	configFile = "../conf/conf.yaml"
 )
 
 func main() {
@@ -63,12 +60,16 @@ func main() {
 }
 
 func readConfig() {
+	var config string
+	pflag.StringVarP(&config, "config", "c", "../conf/conf.yaml", "path to config file")
+	pflag.Parse()
+
 	_, filename, _, ok := runtime.Caller(1)
 	if !ok {
 		panic("can not read config file")
 	}
 
-	filePath := path.Join(path.Dir(filename), configFile)
+	filePath := path.Join(path.Dir(filename), config)
 
 	viper.SetConfigFile(filePath)
 	if err := viper.ReadInConfig(); err != nil {
