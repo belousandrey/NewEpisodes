@@ -44,7 +44,7 @@ func main() {
 		}
 	}
 
-	if len(podcasts) > 0 {
+	if len(emailContent) > 0 {
 		viper.Set("podcasts", podcasts)
 
 		err = sendEmail(viper.GetString("email.to"), viper.GetStringMapString("email.from"), emailContent)
