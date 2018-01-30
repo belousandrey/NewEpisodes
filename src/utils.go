@@ -13,7 +13,7 @@ import (
 
 var emailTemplateFile = "../templates/email.html"
 
-func sendEmail(recepient string, sender map[string]string, data []*types.PodcastWithEpisodes) error {
+func sendEmail(recepient string, sender map[string]string, data []types.PodcastWithEpisodes) error {
 	t, err := template.ParseFiles(emailTemplateFile)
 	if err != nil {
 		return err

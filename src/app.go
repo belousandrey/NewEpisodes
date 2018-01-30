@@ -8,6 +8,8 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 
+	"sync"
+
 	"github.com/belousandrey/NewEpisodes/src/engines/defaultengine"
 	"github.com/belousandrey/NewEpisodes/src/engines/matchdaybiz"
 	"github.com/belousandrey/NewEpisodes/src/types"
@@ -22,27 +24,34 @@ func main() {
 		panic(err)
 	}
 
-	var emailContent = make([]*types.PodcastWithEpisodes, 0)
-	for i, e := range podcasts {
-		episodes, nle, err := processPodcast(e)
-		if err != nil {
-			fmt.Printf("[ERROR] %s\n", err.Error())
-		}
+	// wait group for all workers
+	wg := new(sync.WaitGroup)
 
-		if len(episodes) > 0 {
-			pwe := types.NewPodcastWithEpisodes(e)
+	// chan with all new episodes
+	ch := make(chan types.PodcastWithEpisodes, 0)
 
-			for _, e := range episodes {
-				pwe.Episodes = append(pwe.Episodes, *e)
+	var emailContent = make([]types.PodcastWithEpisodes, 0)
+
+	// go-routine to read chan with new episodes
+	go func(wg *sync.WaitGroup, success <-chan types.PodcastWithEpisodes) {
+		for pwe := range success {
+			if pwe.LastEpisodeDate != "" {
+				emailContent = append(emailContent, pwe)
+				podcasts[pwe.Position].Last = pwe.LastEpisodeDate
 			}
 
-			emailContent = append(emailContent, pwe)
+			wg.Done()
 		}
+	}(wg, ch)
 
-		if nle != "" {
-			podcasts[i].Last = nle
-		}
+	// go routine to process list of podcasts
+	for i, e := range podcasts {
+		wg.Add(1)
+		go processPodcast(i, e, ch)
 	}
+
+	wg.Wait()
+	close(ch)
 
 	if len(emailContent) > 0 {
 		viper.Set("podcasts", podcasts)
@@ -77,7 +86,7 @@ func readConfig() {
 	}
 }
 
-func processPodcast(podcast types.Podcast) (listEpisodes []*types.Episode, newLastEpisode string, err error) {
+func processPodcast(i int, podcast types.Podcast, ch chan<- types.PodcastWithEpisodes) {
 	resp, err := DownloadFile(podcast.Link)
 	if err != nil {
 		return
@@ -85,23 +94,22 @@ func processPodcast(podcast types.Podcast) (listEpisodes []*types.Episode, newLa
 	defer resp.Body.Close()
 
 	var (
-		res  []*types.Episode
-		last string
+		engineEpisodes []types.Episode
+		last           string
 	)
 	switch podcast.Engine {
 	case "golangshow", "changelog", "rucast", "podfm", "podster":
-		res, last, err = defaultengine.NewEngine(podcast.Last).GetNewEpisodes(resp)
+		engineEpisodes, last, err = defaultengine.NewEngine(podcast.Last).GetNewEpisodes(resp)
 	case "matchdaybiz":
-		res, last, err = matchdaybiz.NewEngine(podcast.Last).GetNewEpisodes(resp)
+		engineEpisodes, last, err = matchdaybiz.NewEngine(podcast.Last).GetNewEpisodes(resp)
 	}
 	if err != nil {
-		return listEpisodes, newLastEpisode, err
+		// do something
 	}
-	listEpisodes = append(listEpisodes, res...)
 
-	if last != "" {
-		newLastEpisode = last
-	}
+	pwe := types.NewPodcastWithEpisodes(podcast, i, last)
+	pwe.Episodes = append(pwe.Episodes, engineEpisodes...)
+	ch <- *pwe
 
 	return
 }

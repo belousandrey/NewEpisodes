@@ -20,7 +20,7 @@ func NewEngine(last string) *Engine {
 	}
 }
 
-func (e *Engine) GetNewEpisodes(resp *http.Response) (episodes []*types.Episode, last string, err error) {
+func (e *Engine) GetNewEpisodes(resp *http.Response) (episodes []types.Episode, last string, err error) {
 	tle, err := time.Parse(constants.DateFormat, e.lastEpisode)
 	if err != nil {
 		return
@@ -41,7 +41,12 @@ func (e *Engine) GetNewEpisodes(resp *http.Response) (episodes []*types.Episode,
 			last = e.PublishedParsed.Add(time.Hour * 24).Format(constants.DateFormat)
 		}
 
-		episodes = append([]*types.Episode{types.NewEpisode(e.Title, e.Link, e.PublishedParsed.Format(constants.DateFormat))}, episodes...)
+		ep := types.Episode{
+			Title: e.Title,
+			Link:  e.Link,
+			Date:  e.PublishedParsed.Format(constants.DateFormat),
+		}
+		episodes = append([]types.Episode{ep}, episodes...)
 	}
 
 	return

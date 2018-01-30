@@ -31,13 +31,17 @@ func NewEpisode(title, link, date string) *Episode {
 }
 
 type PodcastWithEpisodes struct {
+	Position int
 	Podcast
-	Episodes []Episode
+	Episodes        []Episode
+	LastEpisodeDate string
 }
 
-func NewPodcastWithEpisodes(podcast Podcast) *PodcastWithEpisodes {
+func NewPodcastWithEpisodes(podcast Podcast, pos int, led string) *PodcastWithEpisodes {
 	return &PodcastWithEpisodes{
+		pos,
 		podcast,
 		make([]Episode, 0),
+		led,
 	}
 }
