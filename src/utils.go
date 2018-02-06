@@ -31,12 +31,12 @@ func sendEmail(recepient string, sender map[string]string, data []types.PodcastW
 
 	var html bytes.Buffer
 	if err = t.Execute(&html, data); err != nil {
-		return err
+		return errors.Wrap(err, "execute template content")
 	}
 
 	port, err := strconv.Atoi(sender["port"])
 	if err != nil {
-		return err
+		return errors.Wrap(err, "convert string to integer")
 	}
 	d := gomail.NewDialer(sender["host"], port, sender["username"], sender["password"])
 
@@ -47,7 +47,7 @@ func sendEmail(recepient string, sender map[string]string, data []types.PodcastW
 	m.SetBody("text/html", html.String())
 
 	if err := d.DialAndSend(m); err != nil {
-		panic(err)
+		return errors.Wrap(err, "dial and send email")
 	}
 	return nil
 }
@@ -55,7 +55,7 @@ func sendEmail(recepient string, sender map[string]string, data []types.PodcastW
 func DownloadFile(url string) (*http.Response, error) {
 	resp, err := http.Get(url)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "download file by URL")
 	}
 
 	return resp, nil

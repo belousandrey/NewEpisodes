@@ -10,6 +10,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/belousandrey/NewEpisodes/src/const"
 	"github.com/belousandrey/NewEpisodes/src/types"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -29,11 +30,13 @@ func NewEngine(last string) *Engine {
 func (e *Engine) GetNewEpisodes(resp *http.Response) (episodes []types.Episode, last string, err error) {
 	tle, err := time.Parse(constants.DateFormat, e.lastEpisode)
 	if err != nil {
+		err = errors.Wrap(err, "parse date from string")
 		return
 	}
 
 	doc, err := goquery.NewDocumentFromResponse(resp)
 	if err != nil {
+		err = errors.Wrap(err, "parse HTML document")
 		return
 	}
 

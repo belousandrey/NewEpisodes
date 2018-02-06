@@ -8,6 +8,7 @@ import (
 	"github.com/belousandrey/NewEpisodes/src/const"
 	"github.com/belousandrey/NewEpisodes/src/types"
 	"github.com/mmcdole/gofeed"
+	"github.com/pkg/errors"
 )
 
 type Engine struct {
@@ -23,12 +24,14 @@ func NewEngine(last string) *Engine {
 func (e *Engine) GetNewEpisodes(resp *http.Response) (episodes []types.Episode, last string, err error) {
 	tle, err := time.Parse(constants.DateFormat, e.lastEpisode)
 	if err != nil {
+		err = errors.Wrap(err, "parse date from string")
 		return
 	}
 
 	fp := gofeed.NewParser()
 	feed, err := fp.Parse(resp.Body)
 	if err != nil {
+		err = errors.Wrap(err, "parse RSS feed body")
 		return
 	}
 

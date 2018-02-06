@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"path"
 
 	"github.com/spf13/pflag"
@@ -23,7 +22,7 @@ func main() {
 	var podcasts []types.Podcast
 	err := viper.UnmarshalKey("podcasts", &podcasts)
 	if err != nil {
-		panic(err)
+		panic(errors.Wrap(err, "parse config file"))
 	}
 
 	// wait group for all workers
@@ -60,12 +59,12 @@ func main() {
 
 		err = sendEmail(viper.GetString("email.to"), viper.GetStringMapString("email.from"), emailContent)
 		if err != nil {
-			panic(err)
+			panic(errors.Wrap(err, "send email"))
 		}
 
 		// update config file with dates of last episodes
 		if err := viper.WriteConfig(); err != nil {
-			panic(fmt.Errorf("config write: %s", err))
+			panic(errors.Wrap(err, "config write"))
 		}
 	}
 }
