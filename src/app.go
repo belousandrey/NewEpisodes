@@ -3,16 +3,18 @@ package main
 import (
 	"fmt"
 	"path"
-	"runtime"
 
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 
 	"sync"
 
+	"os"
+
 	"github.com/belousandrey/NewEpisodes/src/engines/defaultengine"
 	"github.com/belousandrey/NewEpisodes/src/engines/matchdaybiz"
 	"github.com/belousandrey/NewEpisodes/src/types"
+	"github.com/pkg/errors"
 )
 
 func main() {
@@ -73,16 +75,21 @@ func readConfig() {
 	pflag.StringVarP(&config, "config", "c", "../conf/conf.yaml", "path to config file")
 	pflag.Parse()
 
-	_, filename, _, ok := runtime.Caller(1)
-	if !ok {
-		panic("can not read config file")
-	}
+	var filePath string
+	if path.IsAbs(config) {
+		filePath = config
+	} else {
+		pwd, err := os.Getwd()
+		if err != nil {
+			panic(errors.Wrap(err, "get working directory"))
+		}
 
-	filePath := path.Join(path.Dir(filename), config)
+		filePath = path.Join(pwd, config)
+	}
 
 	viper.SetConfigFile(filePath)
 	if err := viper.ReadInConfig(); err != nil {
-		panic(err)
+		panic(errors.Wrap(err, "read config file"))
 	}
 }
 

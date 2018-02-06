@@ -7,16 +7,26 @@ import (
 
 	"strconv"
 
+	"runtime"
+
+	"path"
+
 	"github.com/belousandrey/NewEpisodes/src/types"
 	"github.com/go-gomail/gomail"
+	"github.com/pkg/errors"
 )
 
 var emailTemplateFile = "../templates/email.html"
 
 func sendEmail(recepient string, sender map[string]string, data []types.PodcastWithEpisodes) error {
-	t, err := template.ParseFiles(emailTemplateFile)
+	_, filename, _, ok := runtime.Caller(1)
+	if !ok {
+		return errors.New("get program location")
+	}
+
+	t, err := template.ParseFiles(path.Join(path.Dir(filename), emailTemplateFile))
 	if err != nil {
-		return err
+		return errors.Wrap(err, "parse template file")
 	}
 
 	var html bytes.Buffer
