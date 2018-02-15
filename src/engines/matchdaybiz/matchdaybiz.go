@@ -21,20 +21,20 @@ const (
 // Engine - special engine for podcast matchday.biz
 type Engine struct {
 	// lastEpisode - last episode that we know
-	lastEpisode string
+	LastEpisode string
 }
 
 // NewEngine - create new engine
 func NewEngine(last string) types.Episoder {
 	return &Engine{
-		lastEpisode: last,
+		LastEpisode: last,
 	}
 }
 
-// GetNewEpisodes - find new episodes since lastEpisode
+// GetNewEpisodes - find new episodes since LastEpisode
 func (e *Engine) GetNewEpisodes(resp *http.Response) (episodes []types.Episode, last string, err error) {
 	// parse date from specific date format
-	tle, err := time.Parse(constants.DateFormat, e.lastEpisode)
+	tle, err := time.Parse(constants.DateFormat, e.LastEpisode)
 	if err != nil {
 		err = errors.Wrap(err, "parse date from string")
 		return
