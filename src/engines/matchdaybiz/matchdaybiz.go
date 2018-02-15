@@ -14,32 +14,40 @@ import (
 )
 
 const (
+	// MatchDayDateFormat - date format that used at matchday.biz
 	MatchDayDateFormat = "02.01.2006 в 15:04"
 )
 
+// Engine - special engine for podcast matchday.biz
 type Engine struct {
+	// lastEpisode - last episode that we know
 	lastEpisode string
 }
 
-func NewEngine(last string) *Engine {
+// NewEngine - create new engine
+func NewEngine(last string) types.Episoder {
 	return &Engine{
 		lastEpisode: last,
 	}
 }
 
+// GetNewEpisodes - find new episodes since lastEpisode
 func (e *Engine) GetNewEpisodes(resp *http.Response) (episodes []types.Episode, last string, err error) {
+	// parse date from specific date format
 	tle, err := time.Parse(constants.DateFormat, e.lastEpisode)
 	if err != nil {
 		err = errors.Wrap(err, "parse date from string")
 		return
 	}
 
+	// parse HTML document content
 	doc, err := goquery.NewDocumentFromResponse(resp)
 	if err != nil {
 		err = errors.Wrap(err, "parse HTML document")
 		return
 	}
 
+	// extract data from table
 	doc.Find(".myform .myhistory").EachWithBreak(func(i int, table *goquery.Selection) bool {
 		table.Find("tr").EachWithBreak(func(i int, tr *goquery.Selection) bool {
 			// first row has only headers
@@ -69,6 +77,7 @@ func (e *Engine) GetNewEpisodes(resp *http.Response) (episodes []types.Episode, 
 				}
 			})
 
+			// search for new episodes
 			if date.Before(tle) {
 				return false
 			}

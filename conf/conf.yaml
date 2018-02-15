@@ -1,8 +1,9 @@
 email:
   to: someguy@gmail.com
   from:
-    host: smtp.gmail.com
+    smtp: smtp.gmail.com
     port: 587
+    domain: gmail.com
     username: someguy
     password: password
 podcasts:

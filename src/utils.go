@@ -16,33 +16,26 @@ import (
 	"github.com/pkg/errors"
 )
 
-var emailTemplateFile = "../templates/email.html"
+const emailTemplateFile = "../templates/email.html"
 
-func sendEmail(recepient string, sender map[string]string, data []types.PodcastWithEpisodes) error {
-	_, filename, _, ok := runtime.Caller(1)
-	if !ok {
-		return errors.New("get program location")
-	}
-
-	t, err := template.ParseFiles(path.Join(path.Dir(filename), emailTemplateFile))
+// SendEmail - generate HTML from template, send email
+func SendEmail(recipient string, sender map[string]string, data []types.PodcastWithEpisodes) error {
+	// process template
+	html, err := PrepareTemplate(data)
 	if err != nil {
-		return errors.Wrap(err, "parse template file")
-	}
-
-	var html bytes.Buffer
-	if err = t.Execute(&html, data); err != nil {
-		return errors.Wrap(err, "execute template content")
+		return errors.Wrap(err, "prepare template")
 	}
 
 	port, err := strconv.Atoi(sender["port"])
 	if err != nil {
 		return errors.Wrap(err, "convert string to integer")
 	}
-	d := gomail.NewDialer(sender["host"], port, sender["username"], sender["password"])
+	d := gomail.NewDialer(sender["smtp"], port, sender["username"], sender["password"])
 
+	// send email
 	m := gomail.NewMessage()
-	m.SetHeader("From", recepient)
-	m.SetHeader("To", recepient)
+	m.SetHeader("From", sender["username"]+"@"+sender["domain"])
+	m.SetHeader("To", recipient)
 	m.SetHeader("Subject", "New podcast episodes")
 	m.SetBody("text/html", html.String())
 
@@ -52,6 +45,27 @@ func sendEmail(recepient string, sender map[string]string, data []types.PodcastW
 	return nil
 }
 
+// PrepareTemplate - parse template file, fill it with data
+func PrepareTemplate(data []types.PodcastWithEpisodes) (*bytes.Buffer, error) {
+	_, filename, _, ok := runtime.Caller(1)
+	if !ok {
+		return nil, errors.New("get program location")
+	}
+
+	t, err := template.ParseFiles(path.Join(path.Dir(filename), emailTemplateFile))
+	if err != nil {
+		return nil, errors.Wrap(err, "parse template file")
+	}
+
+	var html bytes.Buffer
+	if err = t.Execute(&html, data); err != nil {
+		return nil, errors.Wrap(err, "execute template content")
+	}
+
+	return &html, nil
+}
+
+// DownloadFile - download file by provided URL
 func DownloadFile(url string) (*http.Response, error) {
 	resp, err := http.Get(url)
 	if err != nil {

@@ -11,23 +11,29 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Engine - default engine for most podcasts
 type Engine struct {
+	// lastEpisode - last episode that we know
 	lastEpisode string
 }
 
-func NewEngine(last string) *Engine {
+// NewEngine - create new default engine
+func NewEngine(last string) types.Episoder {
 	return &Engine{
 		lastEpisode: last,
 	}
 }
 
+// GetNewEpisodes - find new episodes since lastEpisode
 func (e *Engine) GetNewEpisodes(resp *http.Response) (episodes []types.Episode, last string, err error) {
+	// parse date from default date format
 	tle, err := time.Parse(constants.DateFormat, e.lastEpisode)
 	if err != nil {
 		err = errors.Wrap(err, "parse date from string")
 		return
 	}
 
+	// parse RSS content
 	fp := gofeed.NewParser()
 	feed, err := fp.Parse(resp.Body)
 	if err != nil {
@@ -35,6 +41,7 @@ func (e *Engine) GetNewEpisodes(resp *http.Response) (episodes []types.Episode, 
 		return
 	}
 
+	// search for new episodes
 	for _, e := range feed.Items {
 		if e.PublishedParsed.Before(tle) {
 			break

@@ -54,10 +54,11 @@ func main() {
 	wg.Wait()
 	close(ch)
 
+	// send email in case of new episodes and update config
 	if len(emailContent) > 0 {
 		viper.Set("podcasts", podcasts)
 
-		err = sendEmail(viper.GetString("email.to"), viper.GetStringMapString("email.from"), emailContent)
+		err = SendEmail(viper.GetString("email.to"), viper.GetStringMapString("email.from"), emailContent)
 		if err != nil {
 			panic(errors.Wrap(err, "send email"))
 		}

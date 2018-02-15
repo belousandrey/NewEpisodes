@@ -1,42 +1,48 @@
 package types
 
+import (
+	"net/http"
+)
+
+// Episoder - interface for engines
+type Episoder interface {
+	GetNewEpisodes(resp *http.Response) (episodes []Episode, last string, err error)
+}
+
+// Podcast - config file representation for podcast
 type Podcast struct {
-	Last   string
-	Link   string
-	Title  string
+	// Last - string with last episode date
+	Last string
+	// Link - link to RSS or HTML page with episodes list
+	Link string
+	// Title - human readable name
+	Title string
+	// Engine - way of podcast processing
 	Engine string
 }
 
-func NewPodcast(e, h, l, t string) *Podcast {
-	return &Podcast{
-		Title:  t,
-		Link:   h,
-		Engine: e,
-		Last:   l,
-	}
-}
-
+// Episode - one episode of podcast
 type Episode struct {
-	Link  string
+	// Link - URL to the episode file
+	Link string
+	// Title - name of the episode
 	Title string
-	Date  string
+	// Date - string with episode date
+	Date string
 }
 
-func NewEpisode(title, link, date string) *Episode {
-	return &Episode{
-		Title: title,
-		Link:  link,
-		Date:  date,
-	}
-}
-
+// PodcastWithEpisodes - data structure for email template
 type PodcastWithEpisodes struct {
+	// Position - position in config file
 	Position int
 	Podcast
-	Episodes        []Episode
+	// Episodes - list with new episodes
+	Episodes []Episode
+	// LastEpisodeDate - string with last episode date
 	LastEpisodeDate string
 }
 
+// NewPodcastWithEpisodes - create new data structure
 func NewPodcastWithEpisodes(podcast Podcast, pos int, led string) *PodcastWithEpisodes {
 	return &PodcastWithEpisodes{
 		pos,
