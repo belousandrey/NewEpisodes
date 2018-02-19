@@ -1,8 +1,7 @@
 package matchdaybiz
 
 import (
-	"net/http"
-
+	"io"
 	"strings"
 
 	"time"
@@ -32,7 +31,7 @@ func NewEngine(last string) types.Episoder {
 }
 
 // GetNewEpisodes - find new episodes since LastEpisode
-func (e *Engine) GetNewEpisodes(resp *http.Response) (episodes []types.Episode, last string, err error) {
+func (e *Engine) GetNewEpisodes(resp io.Reader) (episodes []types.Episode, last string, err error) {
 	// parse date from specific date format
 	tle, err := time.Parse(constants.DateFormat, e.LastEpisode)
 	if err != nil {
@@ -41,7 +40,7 @@ func (e *Engine) GetNewEpisodes(resp *http.Response) (episodes []types.Episode, 
 	}
 
 	// parse HTML document content
-	doc, err := goquery.NewDocumentFromResponse(resp)
+	doc, err := goquery.NewDocumentFromReader(resp)
 	if err != nil {
 		err = errors.Wrap(err, "parse HTML document")
 		return

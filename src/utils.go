@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"html/template"
+	"io"
 	"net/http"
 
 	"strconv"
@@ -66,11 +67,18 @@ func PrepareTemplate(data []types.PodcastWithEpisodes) (*bytes.Buffer, error) {
 }
 
 // DownloadFile - download file by provided URL
-func DownloadFile(url string) (*http.Response, error) {
-	resp, err := http.Get(url)
+func DownloadFile(url string) (io.ReadCloser, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, errors.Wrap(err, "create request object")
+	}
+
+	req.Close = true
+
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, errors.Wrap(err, "download file by URL")
 	}
 
-	return resp, nil
+	return resp.Body, nil
 }

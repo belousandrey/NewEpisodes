@@ -1,12 +1,10 @@
 package types
 
-import (
-	"net/http"
-)
+import "io"
 
 // Episoder - interface for engines
 type Episoder interface {
-	GetNewEpisodes(resp *http.Response) (episodes []Episode, last string, err error)
+	GetNewEpisodes(resp io.Reader) (episodes []Episode, last string, err error)
 }
 
 // Podcast - config file representation for podcast

@@ -1,9 +1,8 @@
 package defaultengine
 
 import (
+	"io"
 	"time"
-
-	"net/http"
 
 	"github.com/belousandrey/new-episodes/src/const"
 	"github.com/belousandrey/new-episodes/src/types"
@@ -25,7 +24,7 @@ func NewEngine(last string) types.Episoder {
 }
 
 // GetNewEpisodes - find new episodes since LastEpisode
-func (e *Engine) GetNewEpisodes(resp *http.Response) (episodes []types.Episode, last string, err error) {
+func (e *Engine) GetNewEpisodes(resp io.Reader) (episodes []types.Episode, last string, err error) {
 	// parse date from default date format
 	tle, err := time.Parse(constants.DateFormat, e.LastEpisode)
 	if err != nil {
@@ -35,7 +34,7 @@ func (e *Engine) GetNewEpisodes(resp *http.Response) (episodes []types.Episode, 
 
 	// parse RSS content
 	fp := gofeed.NewParser()
-	feed, err := fp.Parse(resp.Body)
+	feed, err := fp.Parse(resp)
 	if err != nil {
 		err = errors.Wrap(err, "parse RSS feed body")
 		return

@@ -98,7 +98,7 @@ func processPodcast(i int, podcast types.Podcast, ch chan<- types.PodcastWithEpi
 	if err != nil {
 		return
 	}
-	defer resp.Body.Close()
+	defer resp.Close()
 
 	var (
 		engineEpisodes []types.Episode
