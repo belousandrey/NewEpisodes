@@ -5,8 +5,8 @@ import (
 
 	"net/http"
 
-	"github.com/belousandrey/NewEpisodes/src/const"
-	"github.com/belousandrey/NewEpisodes/src/types"
+	"github.com/belousandrey/new-episodes/src/const"
+	"github.com/belousandrey/new-episodes/src/types"
 	"github.com/mmcdole/gofeed"
 	"github.com/pkg/errors"
 )

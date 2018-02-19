@@ -10,9 +10,9 @@ import (
 
 	"os"
 
-	"github.com/belousandrey/NewEpisodes/src/engines/defaultengine"
-	"github.com/belousandrey/NewEpisodes/src/engines/matchdaybiz"
-	"github.com/belousandrey/NewEpisodes/src/types"
+	"github.com/belousandrey/new-episodes/src/engines/defaultengine"
+	"github.com/belousandrey/new-episodes/src/engines/matchdaybiz"
+	"github.com/belousandrey/new-episodes/src/types"
 	"github.com/pkg/errors"
 )
 

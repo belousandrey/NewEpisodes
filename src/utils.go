@@ -11,7 +11,7 @@ import (
 
 	"path"
 
-	"github.com/belousandrey/NewEpisodes/src/types"
+	"github.com/belousandrey/new-episodes/src/types"
 	"github.com/go-gomail/gomail"
 	"github.com/pkg/errors"
 )

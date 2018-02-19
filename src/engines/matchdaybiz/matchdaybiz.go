@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/belousandrey/NewEpisodes/src/const"
-	"github.com/belousandrey/NewEpisodes/src/types"
+	"github.com/belousandrey/new-episodes/src/const"
+	"github.com/belousandrey/new-episodes/src/types"
 	"github.com/pkg/errors"
 )
 
