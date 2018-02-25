@@ -5,12 +5,9 @@ import (
 	"html/template"
 	"io"
 	"net/http"
-
-	"strconv"
-
-	"runtime"
-
 	"path"
+	"runtime"
+	"strconv"
 
 	"github.com/belousandrey/new-episodes/src/types"
 	"github.com/go-gomail/gomail"

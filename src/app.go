@@ -1,14 +1,12 @@
 package main
 
 import (
+	"os"
 	"path"
+	"sync"
 
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
-
-	"sync"
-
-	"os"
 
 	"github.com/belousandrey/new-episodes/src/engines/defaultengine"
 	"github.com/belousandrey/new-episodes/src/engines/matchdaybiz"
