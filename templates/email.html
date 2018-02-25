@@ -1,5 +1,11 @@
-New episodes in these podcasts:<br/><br/>
+{{if .Success}}New episodes in these podcasts:<br/><br/>
 
-{{range .}}{{.Podcast.Title}}{{range .Episodes}}<ul>
+{{range .Success}}{{.Podcast.Title}}{{range .Episodes}}<ul>
 <li><a href="{{.Link}}">{{.Title}}</a> at {{.Date}}</li></ul>{{end}}
+{{end}}{{end}}
+
+{{if .Problem}}<br/><br/>Problems with these podcasts:<br/><br/>
+{{range .Problem}}<ul>
+    <li>{{.Title}}: please check feed {{.Link}}</li>
+</ul>{{end}}
 {{end}}

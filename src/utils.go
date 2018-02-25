@@ -20,9 +20,9 @@ import (
 const emailTemplateFile = "../templates/email.html"
 
 // SendEmail - generate HTML from template, send email
-func SendEmail(recipient string, sender map[string]string, data []types.PodcastWithEpisodes) error {
+func SendEmail(recipient string, sender map[string]string, content *types.EmailContent) error {
 	// process template
-	html, err := PrepareTemplate(data)
+	html, err := PrepareTemplate(content)
 	if err != nil {
 		return errors.Wrap(err, "prepare template")
 	}
@@ -47,7 +47,7 @@ func SendEmail(recipient string, sender map[string]string, data []types.PodcastW
 }
 
 // PrepareTemplate - parse template file, fill it with data
-func PrepareTemplate(data []types.PodcastWithEpisodes) (*bytes.Buffer, error) {
+func PrepareTemplate(content *types.EmailContent) (*bytes.Buffer, error) {
 	_, filename, _, ok := runtime.Caller(1)
 	if !ok {
 		return nil, errors.New("get program location")
@@ -59,7 +59,7 @@ func PrepareTemplate(data []types.PodcastWithEpisodes) (*bytes.Buffer, error) {
 	}
 
 	var html bytes.Buffer
-	if err = t.Execute(&html, data); err != nil {
+	if err = t.Execute(&html, content); err != nil {
 		return nil, errors.Wrap(err, "execute template content")
 	}
 

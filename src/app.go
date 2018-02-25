@@ -28,16 +28,23 @@ func main() {
 	// wait group for all workers
 	wg := new(sync.WaitGroup)
 
-	// chan with all new episodes
+	// channel with all new episodes
 	ch := make(chan types.PodcastWithEpisodes, 0)
 
-	var emailContent = make([]types.PodcastWithEpisodes, 0)
+	// read newEpisodes from ch channel
+	var newEpisodes = make([]types.PodcastWithEpisodes, 0)
+
+	// channel with errors while processing podcasts
+	errCh := make(chan types.Podcast, 0)
+
+	// read errPodcasts from errCh channel
+	var problemPodcasts = make([]types.Podcast, 0)
 
 	// go-routine to read chan with new episodes
 	go func(wg *sync.WaitGroup, success <-chan types.PodcastWithEpisodes) {
 		for pwe := range success {
 			if pwe.LastEpisodeDate != "" {
-				emailContent = append(emailContent, pwe)
+				newEpisodes = append(newEpisodes, pwe)
 				podcasts[pwe.Position].Last = pwe.LastEpisodeDate
 			}
 
@@ -45,20 +52,27 @@ func main() {
 		}
 	}(wg, ch)
 
-	// go routine to process list of podcasts
+	// go-routine to read chan with problem podcasts
+	go func(problems <-chan types.Podcast) {
+		for pr := range problems {
+			problemPodcasts = append(problemPodcasts, pr)
+		}
+	}(errCh)
+
+	// start go routine for each podcast for parallel processing
 	for i, e := range podcasts {
 		wg.Add(1)
-		go processPodcast(i, e, ch)
+		go processPodcast(i, e, ch, errCh)
 	}
 
 	wg.Wait()
 	close(ch)
 
 	// send email in case of new episodes and update config
-	if len(emailContent) > 0 {
+	if len(newEpisodes) > 0 || len(problemPodcasts) > 0 {
 		viper.Set("podcasts", podcasts)
 
-		err = SendEmail(viper.GetString("email.to"), viper.GetStringMapString("email.from"), emailContent)
+		err = SendEmail(viper.GetString("email.to"), viper.GetStringMapString("email.from"), types.NewEmailContent(newEpisodes, problemPodcasts))
 		if err != nil {
 			panic(errors.Wrap(err, "send email"))
 		}
@@ -93,7 +107,7 @@ func readConfig() {
 	}
 }
 
-func processPodcast(i int, podcast types.Podcast, ch chan<- types.PodcastWithEpisodes) {
+func processPodcast(i int, podcast types.Podcast, ch chan<- types.PodcastWithEpisodes, errCh chan<- types.Podcast) {
 	resp, err := DownloadFile(podcast.Link)
 	if err != nil {
 		return
@@ -111,7 +125,7 @@ func processPodcast(i int, podcast types.Podcast, ch chan<- types.PodcastWithEpi
 		engineEpisodes, last, err = matchdaybiz.NewEngine(podcast.Last).GetNewEpisodes(resp)
 	}
 	if err != nil {
-		// do something
+		errCh <- podcast
 	}
 
 	pwe := types.NewPodcastWithEpisodes(podcast, i, last)

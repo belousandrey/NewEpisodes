@@ -49,3 +49,17 @@ func NewPodcastWithEpisodes(podcast Podcast, pos int, led string) *PodcastWithEp
 		led,
 	}
 }
+
+// EmailContent - structured data for email
+type EmailContent struct {
+	Success []PodcastWithEpisodes
+	Problem []Podcast
+}
+
+// NewEmailContent - create new email content structure
+func NewEmailContent(s []PodcastWithEpisodes, p []Podcast) *EmailContent {
+	return &EmailContent{
+		Success: s,
+		Problem: p,
+	}
+}
