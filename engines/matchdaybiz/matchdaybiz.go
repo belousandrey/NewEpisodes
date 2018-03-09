@@ -3,12 +3,10 @@ package matchdaybiz
 import (
 	"io"
 	"strings"
-
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/belousandrey/new-episodes/src/const"
-	"github.com/belousandrey/new-episodes/src/types"
+	app "github.com/belousandrey/new-episodes"
 	"github.com/pkg/errors"
 )
 
@@ -24,16 +22,16 @@ type Engine struct {
 }
 
 // NewEngine - create new engine
-func NewEngine(last string) types.Episoder {
+func NewEngine(last string) app.Episoder {
 	return &Engine{
 		LastEpisode: last,
 	}
 }
 
 // GetNewEpisodes - find new episodes since LastEpisode
-func (e *Engine) GetNewEpisodes(resp io.Reader) (episodes []types.Episode, last string, err error) {
+func (e *Engine) GetNewEpisodes(resp io.Reader) (episodes []app.Episode, last string, err error) {
 	// parse date from specific date format
-	tle, err := time.Parse(constants.DateFormat, e.LastEpisode)
+	tle, err := time.Parse(app.DateFormat, e.LastEpisode)
 	if err != nil {
 		err = errors.Wrap(err, "parse date from string")
 		return
@@ -82,15 +80,15 @@ func (e *Engine) GetNewEpisodes(resp io.Reader) (episodes []types.Episode, last 
 			}
 
 			if last == "" {
-				last = date.Add(time.Hour * 24).Format(constants.DateFormat)
+				last = date.Add(time.Hour * 24).Format(app.DateFormat)
 			}
 
-			ep := types.Episode{
+			ep := app.Episode{
 				Link:  link,
 				Title: title,
-				Date:  date.Format(constants.DateFormat),
+				Date:  date.Format(app.DateFormat),
 			}
-			episodes = append([]types.Episode{ep}, episodes...)
+			episodes = append([]app.Episode{ep}, episodes...)
 			return true
 		})
 

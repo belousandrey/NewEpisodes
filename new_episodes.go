@@ -1,6 +1,11 @@
-package types
+package new_episodes
 
 import "io"
+
+const (
+	// DateFormat - default date format that used at most of podcasts
+	DateFormat = "2006-01-02"
+)
 
 // Episoder - interface for engines
 type Episoder interface {
